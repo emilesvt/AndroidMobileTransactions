@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mockservice universal_twist_info_id="null" version="1.0" xml:lang="en-US">
+<proxy_settings proxy_enabled="false" proxy_url=""/>
+<serviceref file="mockey_def_depot/AuthenticationService.xml"/>
+<serviceref file="mockey_def_depot/LogoutService.xml"/>
+</mockservice>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="me.ericmiles.mobiletrans"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="7" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="me.ericmiles.mobiletrans.USES_REST" />
+
+    <permission
+        android:name="me.ericmiles.mobiletrans.USES_REST"
+        android:protectionLevel="signature" >
+    </permission>
+
+    <application
+        android:debuggable="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
+        <activity
+            android:label="@string/app_name"
+            android:name=".activities.MainActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.ConnectionErrorActivity" >
+        </activity>
+        <activity
+            android:name=".activities.LogoutActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="me.ericmiles.mobiletrans.activities.TimeoutWarningActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
+        </activity>
+
+        <service android:name="me.ericmiles.mobiletrans.rest.RestDelegateService" >
+        </service>
+
+        <receiver
+            android:name=".session.SessionManagerBroadcastReceiver"
+            android:permission="me.ericmiles.mobiletrans.USES_REST" >
+            <intent-filter android:priority="500" >
+                <action android:name="me.ericmiles.mobiletrans.ACTION_REST_RESULT" />
+
+                <category android:name="me.ericmiles.mobiletrans.operations.LoginOperation.Response" />
+                <category android:name="me.ericmiles.mobiletrans.operations.LogoutOperation.Response" />
+                <category android:name="me.ericmiles.mobiletrans.operations.TimeoutOperation.Response" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="me.ericmiles.mobiletrans.rest.ConnectionErrorBroadcastReceiver"
+            android:permission="me.ericmiles.mobiletrans.USES_REST" >
+            <intent-filter android:priority="100" >
+                <action android:name="me.ericmiles.mobiletrans.ACTION_REST_RESULT" />
+
+                <category android:name="org.apache.http.conn.ConnectTimeoutException" />
+                <category android:name="java.net.ConnectException" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

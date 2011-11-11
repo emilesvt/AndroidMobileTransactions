@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mockservice version="1.0" xml:lang="en-US">
+<service default_real_url_index="0" default_scenario_id="1" description="" hang_time="0" http_content_type="application/json;" name="AuthenticationService" service_response_type="2" url="AuthenticationService">
+<scenario id="1" name="Default">
+<scenario_match/>
+<scenario_response><![CDATA[{"status":"FAILED","errorMsg":"You provided an invalid username or password","errorCode":"A001"}]]></scenario_response>
+</scenario>
+<scenario id="2" name="Success">
+<scenario_match><![CDATA[emiles]]></scenario_match>
+<scenario_response><![CDATA[{"status":"SUCCESS","sessionId":"aasdfasd-123431-132dasdf","timeout":"2"}]]></scenario_response>
+</scenario>
+</service>
+</mockservice>

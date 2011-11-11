@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mockservice version="1.0" xml:lang="en-US">
+<service default_real_url_index="0" default_scenario_id="1" description="" hang_time="0" http_content_type="application/json;" name="FirstService" service_response_type="1" url="FirstService">
+<scenario id="1" name="Static Response">
+<scenario_match/>
+<scenario_response><![CDATA[{    "values": ["my server value 1","my server value 2","my server value 3"]}]]></scenario_response>
+</scenario>
+</service>
+</mockservice>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Mobile Transactions Example App</string>
+    <string name="login">Login</string>
+    <string name="access_number">Access Number</string>
+    <string name="user_id">User Id</string>
+    <string name="password">Password</string>
+    <string name="login_instructions">Login to the System</string>
+    <string name="logout">Logout</string>
+    <string name="show_session_id">Show Session Id</string>
+    <string name="fire_timeout_operation">Fire Timeout Operation</string>
+
+</resources>
