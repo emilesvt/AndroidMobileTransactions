@@ -48,6 +48,20 @@ public final class OperationIntentFactory {
 		return new Intent(context, RestDelegateService.class);
 	}
 
+	public Intent createIntent(Operation.OperationResponse response) {
+		Intent intent = new Intent(Constants.ACTION_REST_RESULT);
+		intent.addCategory(Utils.escapeType(response.getClass()));
+		intent.putExtra(Constants.REST_RESPONSE, response);
+		return intent;
+	}
+
+	public Intent createIntent(Throwable e) {
+		Intent intent = new Intent(Constants.ACTION_REST_RESULT);
+		intent.addCategory(Utils.escapeType(e.getClass()));
+		intent.putExtra(Constants.REST_EXCEPTION, e);
+		return intent;
+	}
+
 	public IntentFilter createIntentFilter(Class<? extends Operation.OperationResponse> clazz) {
 		IntentFilter filter = new IntentFilter(Constants.ACTION_REST_RESULT);
 		filter.addCategory(Utils.escapeType(clazz));

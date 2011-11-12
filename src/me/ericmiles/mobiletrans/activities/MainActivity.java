@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
 	private EditText userId;
 	private EditText password;
 	private Button show;
+	private Button login;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,11 +52,15 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		final Button button = (Button) findViewById(R.id.login);
-		button.setOnClickListener(new View.OnClickListener() {
+		login = (Button) findViewById(R.id.login);
+		login.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				login.setEnabled(false);
+				userId.setEnabled(false);
+				password.setEnabled(false);
+				
 				LoginOperation.Request request = new LoginOperation.Request();
 				request.userId = userId.getText().toString();
 				request.password = password.getText().toString();
@@ -64,7 +69,7 @@ public class MainActivity extends Activity {
 				startService(intent);
 
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(button.getWindowToken(), 0);
+				imm.hideSoftInputFromWindow(login.getWindowToken(), 0);
 
 			}
 		});
@@ -97,6 +102,10 @@ public class MainActivity extends Activity {
 
 				@Override
 				public void run() {
+					login.setEnabled(true);
+					userId.setEnabled(true);
+					password.setEnabled(true);
+					
 					AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 					builder.setTitle("Login Response");
 					builder.setMessage(response.status.name());

@@ -3,7 +3,7 @@
  */
 package me.ericmiles.mobiletrans.rest;
 
-import me.ericmiles.mobiletrans.activities.ConnectionErrorActivity;
+import me.ericmiles.mobiletrans.activities.ErrorActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +11,16 @@ import android.util.Log;
 
 
 /**
+ * For this scenario, we're going to have 1 single error broadcast receiver,
+ * that will take care of ALL errors.  You could/should have multiple receivers
+ * for different error types.
+ * 
  * @author emiles
  * 
  */
-public class ConnectionErrorBroadcastReceiver extends BroadcastReceiver {
+public class ErrorBroadcastReceiver extends BroadcastReceiver {
 
-	private static final String TAG = ConnectionErrorBroadcastReceiver.class.getSimpleName();
+	private static final String TAG = ErrorBroadcastReceiver.class.getSimpleName();
 
 	/*
 	 * (non-Javadoc)
@@ -31,7 +35,7 @@ public class ConnectionErrorBroadcastReceiver extends BroadcastReceiver {
 		// determine
 		// what activity we want to call
 		// for this demo, always call connection timeout
-		Intent forward = new Intent(context, ConnectionErrorActivity.class);
+		Intent forward = new Intent(context, ErrorActivity.class);
 		forward.putExtras(intent.getExtras());
 		forward.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(forward);

@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ConnectionErrorActivity" >
+        <activity android:name=".activities.ErrorActivity" >
         </activity>
         <activity
             android:name=".activities.SecondaryActivity"
@@ -54,13 +54,14 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="me.ericmiles.mobiletrans.rest.ConnectionErrorBroadcastReceiver"
+            android:name=".rest.ErrorBroadcastReceiver"
             android:permission="me.ericmiles.mobiletrans.USES_REST" >
             <intent-filter android:priority="100" >
                 <action android:name="me.ericmiles.mobiletrans.ACTION_REST_RESULT" />
 
                 <category android:name="org.apache.http.conn.ConnectTimeoutException" />
                 <category android:name="java.net.ConnectException" />
+                <category android:name="me.ericmiles.mobiletrans.DEFAULT_EXCEPTION" />
             </intent-filter>
         </receiver>
     </application>
