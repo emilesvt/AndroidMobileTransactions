@@ -6,23 +6,21 @@ package me.ericmiles.mobiletrans.activities;
 import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.operations.Operation;
 import me.ericmiles.mobiletrans.operations.Operation.OperationRequest;
-import me.ericmiles.mobiletrans.operations.Operation.OperationResponse.Status;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
+import me.ericmiles.mobiletrans.operations.TimeoutOperation;
+import me.ericmiles.mobiletrans.rest.SendFailedMessageService;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 /**
  * @author emiles
  * 
  */
 public class ErrorActivity extends Activity {
-
-	private static final String TAG = ErrorActivity.class.getSimpleName();
 
 	private Bundle extras;
 
@@ -42,33 +40,28 @@ public class ErrorActivity extends Activity {
 						"A error occurred while attempting to communicate with the backend.  Do you want to attempt again?")
 				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
+						Operation.OperationRequest request = (OperationRequest) extras
+								.getParcelable(Constants.REST_REQUEST);
 						Intent intent = OperationIntentFactory.getInstance(getApplicationContext()).createIntent(
-								(OperationRequest) extras.getParcelable(Constants.REST_REQUEST));
+								request);
+
+						// this is a cheat, but trying to show that a subsequent
+						// retry CAN work (i can't do this programmatically in
+						// the backend
+						// with mocky
+						if (request instanceof TimeoutOperation.Request) {
+							((TimeoutOperation.Request) request).retry = true;
+						}
+
 						startService(intent);
 						finish();
 					}
 				}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						try {
-
-							// we could do all sorts of things here, but all we're going to do is notify
-							// the calling activity that the call failed
-							Class<? extends Operation.OperationResponse> clazz = ((Operation.OperationRequest) extras
-									.getParcelable(Constants.REST_REQUEST)).getResponseType();
-							Operation.OperationResponse response = clazz.newInstance();
-							response.status = Status.FAILED;
-							response.errorMsg = "Sorry!  Something went terribly wrong";
-
-							// create the response broadcast and send on
-							Intent forward = OperationIntentFactory.getInstance(getApplicationContext()).createIntent(
-									response);
-							sendOrderedBroadcast(forward, Constants.PERMISSION);
-							finish();
-						} catch (IllegalAccessException e) {
-							Log.e(TAG, "oops", e);
-						} catch (InstantiationException e) {
-							Log.e(TAG, "oops", e);
-						}
+						Intent forward = new Intent(ErrorActivity.this, SendFailedMessageService.class);
+						forward.putExtras(extras);
+						startService(forward);
+						finish();
 					}
 				}).create();
 	}

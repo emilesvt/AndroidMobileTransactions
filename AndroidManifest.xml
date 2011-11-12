@@ -7,6 +7,7 @@
     <uses-sdk android:minSdkVersion="7" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="me.ericmiles.mobiletrans.USES_REST" />
 
     <permission
@@ -21,7 +22,8 @@
         <activity
             android:label="@string/app_name"
             android:name=".activities.MainActivity"
-            android:theme="@android:style/Theme.NoTitleBar" >
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:launchMode="singleTask">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,11 +37,13 @@
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name="me.ericmiles.mobiletrans.activities.TimeoutWarningActivity"
+            android:name=".activities.TimeoutWarningActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
         </activity>
 
-        <service android:name="me.ericmiles.mobiletrans.rest.RestDelegateService" >
+        <service android:name=".rest.RestDelegateService" >
+        </service>
+        <service android:name=".rest.SendFailedMessageService" >
         </service>
 
         <receiver

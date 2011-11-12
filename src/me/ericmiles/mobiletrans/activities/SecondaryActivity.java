@@ -40,7 +40,7 @@ public class SecondaryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.secondary);
-		
+
 		final OperationIntentFactory factory = OperationIntentFactory.getInstance(getApplicationContext());
 
 		show = (Button) findViewById(R.id.show);
@@ -103,13 +103,17 @@ public class SecondaryActivity extends Activity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			LogoutOperation.Response response = intent.getParcelableExtra(Constants.REST_RESPONSE);
-			if (response.status == Status.SUCCESS) {
-				Intent forward = new Intent(SecondaryActivity.this, MainActivity.class);
-				startActivity(forward);
-				SecondaryActivity.this.finish();
-			} else {
-				logout.setEnabled(true);
+			// for demo purposes, i want to ignore programmatic logouts
+			// so the user can check the session value
+			if (!logout.isEnabled()) {
+				LogoutOperation.Response response = intent.getParcelableExtra(Constants.REST_RESPONSE);
+				if (response.status == Status.SUCCESS) {
+					Intent forward = new Intent(SecondaryActivity.this, MainActivity.class);
+					startActivity(forward);
+					SecondaryActivity.this.finish();
+				} else {
+					logout.setEnabled(true);
+				}
 			}
 		}
 
@@ -119,7 +123,8 @@ public class SecondaryActivity extends Activity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// TODO: what was i going to do here?
+			TimeoutOperation.Response response = intent.getExtras().getParcelable(Constants.REST_RESPONSE);
+			Toast.makeText(SecondaryActivity.this, "Operation result: " + response.status, Toast.LENGTH_LONG).show();
 			timeout.setEnabled(true);
 		}
 

@@ -92,6 +92,16 @@ public class MainActivity extends Activity {
 		unregisterReceiver(receiver);
 	}
 
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		login.setText(null);
+		userId.setText(null);
+		login.setEnabled(true);
+		userId.setEnabled(true);
+		password.setEnabled(true);
+	}
+
 	class MyReceiver extends BroadcastReceiver {
 
 		@Override
@@ -115,7 +125,6 @@ public class MainActivity extends Activity {
 							if (response.status == LoginOperation.Response.Status.SUCCESS) {
 								Intent forward = new Intent(MainActivity.this, SecondaryActivity.class);
 								startActivity(forward);
-								finish();
 							}
 						}
 					});

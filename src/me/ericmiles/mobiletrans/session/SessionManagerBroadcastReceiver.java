@@ -4,16 +4,21 @@
 package me.ericmiles.mobiletrans.session;
 
 import me.ericmiles.mobiletrans.Constants;
+import me.ericmiles.mobiletrans.R;
+import me.ericmiles.mobiletrans.activities.MainActivity;
 import me.ericmiles.mobiletrans.operations.LoginOperation;
 import me.ericmiles.mobiletrans.operations.LogoutOperation;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
 import me.ericmiles.mobiletrans.util.Utils;
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 /**
  * @author 94728
@@ -62,7 +67,7 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 			killSessionTriggers(context);
 			// let's also notify the user via a status bar notification they've
 			// been logged out
-			// TODO:
+			notifyOfLogout(context);
 		}
 
 		// if we're authenticated and there was a response object
@@ -73,6 +78,27 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 		}
 	}
 
+	private void notifyOfLogout(Context context) {
+		NotificationManager mNotificationManager = (NotificationManager) context
+				.getSystemService(Context.NOTIFICATION_SERVICE);
+		Notification notification = new Notification(android.R.drawable.stat_sys_warning, "You have been logged out",
+				System.currentTimeMillis());
+		notification.defaults |= Notification.DEFAULT_ALL;
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+		// forward to login
+		Intent notificationIntent = new Intent(context, MainActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+		RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification);
+		contentView.setImageViewResource(R.id.image, R.drawable.ic_launcher);
+		contentView.setTextViewText(R.id.text, "You have been logged out, please log back in");
+		notification.contentView = contentView;
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+		notification.contentIntent = contentIntent;
+		mNotificationManager.notify(1, notification);
+	}
+
 	private void killSessionTriggers(Context context) {
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManager.cancel(getLogoutIntent(context));
@@ -81,17 +107,17 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 	private void resetSessionTriggers(Context context) {
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-		// arbitrarily setting session timeout to 2 mins
+		// arbitrarily setting session timeout to 1 mins
 		// should get this from the server, but we're doing this for ease of
 		// demonstration
-		long logoutTimeMillis = System.currentTimeMillis() + (2 * 60 * 1000);
+		long logoutTimeMillis = System.currentTimeMillis() + (1 * 60 * 1000);
 
 		// create one intent for eventual logout broadcast
 		alarmManager.set(AlarmManager.RTC, logoutTimeMillis, getLogoutIntent(context));
 	}
 
 	private PendingIntent getLogoutIntent(Context context) {
-		return PendingIntent.getBroadcast(
+		return PendingIntent.getService(
 				context,
 				0,
 				OperationIntentFactory.getInstance(context.getApplicationContext()).createIntent(
