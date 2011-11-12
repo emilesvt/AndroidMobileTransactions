@@ -31,7 +31,7 @@ public interface LogoutOperation extends Operation {
 
 		@Override
 		public HttpMethod getHttpMethod() {
-			return HttpMethod.GET;
+			return HttpMethod.POST;
 		}
 
 		@Override

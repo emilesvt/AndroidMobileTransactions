@@ -3,9 +3,12 @@
  */
 package me.ericmiles.mobiletrans.operations;
 
+import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.rest.RestDelegateService;
+import me.ericmiles.mobiletrans.util.Utils;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 
 /**
  * @author 94728
@@ -37,11 +40,17 @@ public final class OperationIntentFactory {
 
 	public Intent createIntent(Operation.OperationRequest request) {
 		Intent intent = createIntent();
-		intent.putExtra(RestDelegateService.REQUEST, request);
+		intent.putExtra(Constants.REST_REQUEST, request);
 		return intent;
 	}
 
 	private Intent createIntent() {
 		return new Intent(context, RestDelegateService.class);
+	}
+
+	public IntentFilter createIntentFilter(Class<? extends Operation.OperationResponse> clazz) {
+		IntentFilter filter = new IntentFilter(Constants.ACTION_REST_RESULT);
+		filter.addCategory(Utils.escapeType(clazz));
+		return filter;
 	}
 }

@@ -31,7 +31,7 @@
         <activity android:name=".activities.ConnectionErrorActivity" >
         </activity>
         <activity
-            android:name=".activities.LogoutActivity"
+            android:name=".activities.SecondaryActivity"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity

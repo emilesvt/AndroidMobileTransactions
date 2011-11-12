@@ -3,10 +3,10 @@
  */
 package me.ericmiles.mobiletrans.session;
 
+import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.operations.LoginOperation;
 import me.ericmiles.mobiletrans.operations.LogoutOperation;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
-import me.ericmiles.mobiletrans.rest.RestDelegateService;
 import me.ericmiles.mobiletrans.util.Utils;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -38,41 +38,38 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "Received intent " + intent);
-		String action = intent.getAction();
 
 		boolean authenticated = true;
 
 		SessionManager manager = SessionManager.getInstance(context.getApplicationContext());
 
-		if (RestDelegateService.ACTION_REST_RESULT.equals(action)) {
-			if (intent.getCategories().contains(Utils.escapeType(LoginOperation.Response.class))) {
-				LoginOperation.Response response = intent.getParcelableExtra(RestDelegateService.RESPONSE);
+		if (intent.getCategories().contains(Utils.escapeType(LoginOperation.Response.class))) {
+			LoginOperation.Response response = intent.getParcelableExtra(Constants.REST_RESPONSE);
 
-				Log.d(TAG,
-						"Received broadcast in " + SessionManagerBroadcastReceiver.class.getName() + ": "
-								+ response.toString());
+			Log.d(TAG,
+					"Received broadcast in " + SessionManagerBroadcastReceiver.class.getName() + ": "
+							+ response.toString());
 
-				if (response.status == LoginOperation.Response.Status.SUCCESS) {
-					manager.setSessionId(response.sessionId);
-				} else {
-					authenticated = false;
-				}
-			} else if (intent.getCategories().contains(Utils.escapeType(LogoutOperation.Response.class))) {
+			if (response.status == LoginOperation.Response.Status.SUCCESS) {
+				manager.setSessionId(response.sessionId);
+			} else {
 				authenticated = false;
-				// let's actuall kill our triggers
-				manager.setSessionId(null);
-				killSessionTriggers(context);
-				// let's also notify the user via a status bar notification they've been logged out
-				// TODO:
 			}
+		} else if (intent.getCategories().contains(Utils.escapeType(LogoutOperation.Response.class))) {
+			authenticated = false;
+			// let's kill our triggers
+			manager.setSessionId(null);
+			killSessionTriggers(context);
+			// let's also notify the user via a status bar notification they've
+			// been logged out
+			// TODO:
+		}
 
-			// if we're authenticated and there was a response object
-			// we're going to assume that this was a valid call and we
-			// want to reset our session timeout triggers
-			if (intent.getParcelableExtra(RestDelegateService.RESPONSE) != null && authenticated) {
-				resetSessionTriggers(context);
-			}
-
+		// if we're authenticated and there was a response object
+		// we're going to assume that this was a valid call and we
+		// want to reset our session timeout triggers
+		if (intent.getParcelableExtra(Constants.REST_RESPONSE) != null && authenticated) {
+			resetSessionTriggers(context);
 		}
 	}
 

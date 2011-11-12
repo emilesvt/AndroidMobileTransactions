@@ -7,7 +7,7 @@
 </scenario>
 <scenario id="2" name="Success">
 <scenario_match><![CDATA[emiles]]></scenario_match>
-<scenario_response><![CDATA[{"status":"SUCCESS","sessionId":"aasdfasd-123431-132dasdf","timeout":"2"}]]></scenario_response>
+<scenario_response><![CDATA[{"status":"SUCCESS","sessionId":"aasdfasd-123431-132dasdf"}]]></scenario_response>
 </scenario>
 </service>
 </mockservice>

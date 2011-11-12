@@ -3,4 +3,5 @@
 <proxy_settings proxy_enabled="false" proxy_url=""/>
 <serviceref file="mockey_def_depot/AuthenticationService.xml"/>
 <serviceref file="mockey_def_depot/LogoutService.xml"/>
+<serviceref file="mockey_def_depot/TimeoutService.xml"/>
 </mockservice>

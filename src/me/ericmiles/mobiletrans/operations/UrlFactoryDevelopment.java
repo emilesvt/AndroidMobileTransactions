@@ -8,12 +8,12 @@ import android.content.Context;
 
 /**
  * @author emiles
- *
+ * 
  */
 public class UrlFactoryDevelopment implements UrlFactory {
-	
+
 	private Context context;
-	
+
 	public UrlFactoryDevelopment(Context context) {
 		this.context = context;
 	}
@@ -30,8 +30,13 @@ public class UrlFactoryDevelopment implements UrlFactory {
 
 	@Override
 	public String getUrl(me.ericmiles.mobiletrans.operations.TimeoutOperation.Request request) {
-		return null;
+		// if this is a retry, we want to get the real url
+		// if not, let's get a fake one that will timeout
+		if (request.retry) {
+			return context.getString(R.string.url_timeout_operation);
+		} else {
+			return "http://127.0.0.1/";
+		}
 	}
-	
-	
+
 }

@@ -1,11 +1,10 @@
 package me.ericmiles.mobiletrans.activities;
 
+import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.R;
 import me.ericmiles.mobiletrans.operations.LoginOperation;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
-import me.ericmiles.mobiletrans.rest.RestDelegateService;
 import me.ericmiles.mobiletrans.session.SessionManager;
-import me.ericmiles.mobiletrans.util.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -37,6 +36,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		final OperationIntentFactory factory = OperationIntentFactory.getInstance(getApplicationContext());
+
 		userId = (EditText) findViewById(R.id.userId);
 		password = (EditText) findViewById(R.id.password);
 		show = (Button) findViewById(R.id.show);
@@ -46,7 +47,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				Toast.makeText(MainActivity.this,
 						"Current Session Id is " + SessionManager.getInstance(getApplicationContext()).getSessionId(),
-						Toast.LENGTH_LONG);
+						Toast.LENGTH_LONG).show();
 			}
 		});
 
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
 				request.userId = userId.getText().toString();
 				request.password = password.getText().toString();
 
-				Intent intent = OperationIntentFactory.getInstance(getApplicationContext()).createIntent(request);
+				Intent intent = factory.createIntent(request);
 				startService(intent);
 
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -71,9 +72,7 @@ public class MainActivity extends Activity {
 		receiver = new MyReceiver();
 
 		// we want to only receive broadcasts we can handle
-		filter = new IntentFilter();
-		filter.addAction(RestDelegateService.ACTION_REST_RESULT);
-		filter.addCategory(Utils.escapeType(LoginOperation.Response.class));
+		filter = factory.createIntentFilter(LoginOperation.Response.class);
 	}
 
 	@Override
@@ -93,7 +92,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "Received intent " + intent);
-			final LoginOperation.Response response = intent.getParcelableExtra(RestDelegateService.RESPONSE);
+			final LoginOperation.Response response = intent.getParcelableExtra(Constants.REST_RESPONSE);
 			runOnUiThread(new Runnable() {
 
 				@Override

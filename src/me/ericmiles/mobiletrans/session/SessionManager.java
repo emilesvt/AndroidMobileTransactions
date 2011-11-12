@@ -36,7 +36,7 @@ public class SessionManager {
 	// responses
 	void setSessionId(String sessionId) {
 		// ensure we don't have a thread trying to read this while we're setting it to a new value
-		synchronized(this.sessionId) {
+		synchronized(this) {
 			this.sessionId = sessionId;
 		}
 	}

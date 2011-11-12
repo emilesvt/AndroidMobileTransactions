@@ -5,9 +5,11 @@ package me.ericmiles.mobiletrans.rest;
 
 import java.util.Collections;
 
+import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.operations.Operation;
 import me.ericmiles.mobiletrans.operations.UrlFactory;
 import me.ericmiles.mobiletrans.operations.UrlFactoryDevelopment;
+import me.ericmiles.mobiletrans.session.SessionManager;
 import me.ericmiles.mobiletrans.util.Utils;
 
 import org.apache.http.conn.params.ConnManagerParams;
@@ -45,15 +47,6 @@ import android.util.Log;
 public class RestDelegateService extends IntentService {
 
 	private static final String TAG = RestDelegateService.class.getSimpleName();
-
-	public static final String ACTION_REST_RESULT = "me.ericmiles.mobiletrans.ACTION_REST_RESULT";
-	public static final String PERMISSION = "me.ericmiles.mobiletrans.USES_REST";
-	public static final String DEFAULT_EXCEPTION = "com.navyfederal.tstpkg.DEFAULT_EXCEPTION";
-
-	public static final String REQUEST = "rds.service_request";
-	public static final String RESPONSE = "rds.service_response";
-	public static final String HTTP_RESPONSE_CODE = "rds.http_response_code";
-	public static final String EXCEPTION = "rds.exception";
 
 	private RestTemplate template = null;
 	private UrlFactory urlFactory = null;
@@ -115,10 +108,16 @@ public class RestDelegateService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		// get out all the stuff we need to make the call
-		Operation.OperationRequest request = intent.getParcelableExtra(REQUEST);
+		Operation.OperationRequest request = intent.getParcelableExtra(Constants.REST_REQUEST);
+
+		// if this is an authenticated request, let's put the session id in real quick
+		if (request instanceof Operation.AuthenticatedOperationRequest) {
+			((Operation.AuthenticatedOperationRequest) request).sessionId = SessionManager.getInstance(
+					getApplicationContext()).getSessionId();
+		}
 
 		// create our result broadcast intent
-		Intent result = new Intent(ACTION_REST_RESULT);
+		Intent result = new Intent(Constants.ACTION_REST_RESULT);
 		// add all the request stuff back in...
 		result.putExtras(intent.getExtras());
 
@@ -134,19 +133,17 @@ public class RestDelegateService extends IntentService {
 		try {
 			ResponseEntity r = template.exchange(request.getUrl(urlFactory), request.getHttpMethod(), requestEntity,
 					request.getResponseType());
-			result.putExtra(HTTP_RESPONSE_CODE, r.getStatusCode().value());
-			result.putExtra(RESPONSE, (Parcelable) r.getBody());
+			result.putExtra(Constants.HTTP_RESPONSE_CODE, r.getStatusCode().value());
+			result.putExtra(Constants.REST_RESPONSE, (Parcelable) r.getBody());
 			// can't add this unless it's successful
 			result.addCategory(Utils.escapeType(request.getResponseType()));
 		} catch (RestClientException e) {
 			result.addCategory(e.getRootCause().getClass().getName());
-			result.putExtra(EXCEPTION, e.getRootCause());
+			result.putExtra(Constants.REST_EXCEPTION, e.getRootCause());
 		} catch (Exception e) {
 			result.addCategory(e.getClass().getName());
-			result.putExtra(EXCEPTION, e);
+			result.putExtra(Constants.REST_EXCEPTION, e);
 		}
-
-		Log.d(TAG, "Firing result intent " + result.toString());
 
 		// do we need http headers and things like that?
 		// if so, we might need to think about putting them on the intent as
@@ -155,18 +152,21 @@ public class RestDelegateService extends IntentService {
 		// if this is an exception toting Intent, we need to ensure at least one
 		// BroadcastReceiver is registered
 		// to handle it
-		if (result.getSerializableExtra(EXCEPTION) != null) {
+		if (result.getSerializableExtra(Constants.REST_EXCEPTION) != null) {
 			ensureReceivable(result);
 		}
+		
+		Log.d(TAG, "Firing result intent " + result.toString());
 
-		sendBroadcast(result, PERMISSION);
+		sendBroadcast(result, Constants.PERMISSION);
 	}
 
 	private void ensureReceivable(Intent result) {
 		PackageManager manager = getApplicationContext().getPackageManager();
 		if (manager.queryBroadcastReceivers(result, 0).size() == 0) {
+			// clear all categories and add a default exception category
 			result.getCategories().clear();
-			result.addCategory(DEFAULT_EXCEPTION);
+			result.addCategory(Constants.DEFAULT_EXCEPTION);
 		}
 	}
 
