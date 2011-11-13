@@ -1,5 +1,11 @@
 package me.ericmiles.mobiletrans;
 
+/**
+ * Just a constants file
+ * 
+ * @author emiles
+ *
+ */
 public interface Constants {
 
 	public static final String ACTION_REST_RESULT = "me.ericmiles.mobiletrans.ACTION_REST_RESULT";

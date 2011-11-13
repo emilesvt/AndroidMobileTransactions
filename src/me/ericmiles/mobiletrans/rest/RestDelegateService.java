@@ -61,6 +61,7 @@ public class RestDelegateService extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 
+		// we'll need to do all this to setup the 5 second connection timeout
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
 		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 		schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
@@ -76,9 +77,9 @@ public class RestDelegateService extends IntentService {
 		template = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient));
 
 		// setting read timeout to 5 seconds
-		// not sure if this is the connection timeout?
 		((HttpComponentsClientHttpRequestFactory) template.getRequestFactory()).setReadTimeout(5 * 1000);
 
+		// you could potentially do a "production" url factory here based off the debuggable flag
 		boolean development = false;
 		try {
 			PackageInfo packageInfo = getApplicationContext().getPackageManager().getPackageInfo(
@@ -133,16 +134,13 @@ public class RestDelegateService extends IntentService {
 		try {
 			ResponseEntity r = template.exchange(request.getUrl(urlFactory), request.getHttpMethod(), requestEntity,
 					request.getResponseType());
-			result = factory.createIntent((Operation.OperationResponse) r.getBody());
+			result = factory.createIntent((Operation.OperationResponse) r.getBody(), intent.getExtras());
 			result.putExtra(Constants.HTTP_RESPONSE_CODE, r.getStatusCode().value());
 		} catch (RestClientException e) {
-			result = factory.createIntent(e.getRootCause());
+			result = factory.createIntent(e.getRootCause(), intent.getExtras());
 		} catch (Exception e) {
-			result = factory.createIntent(e);
+			result = factory.createIntent(e, intent.getExtras());
 		}
-
-		// add all the request stuff back in...
-		result.putExtras(intent.getExtras());
 
 		// if this is an exception toting Intent, we need to ensure at least one
 		// BroadcastReceiver is registered
@@ -153,6 +151,8 @@ public class RestDelegateService extends IntentService {
 
 		Log.d(TAG, "Firing result intent " + result.toString());
 
+		// you could even send an Ordered broadcast, but I think the use of a strongly typed
+		// category will alleviate the need to "chain" broadcast receivers like that
 		sendBroadcast(result, Constants.PERMISSION);
 	}
 

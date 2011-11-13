@@ -9,6 +9,7 @@ import me.ericmiles.mobiletrans.util.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 
 /**
  * @author 94728
@@ -48,16 +49,18 @@ public final class OperationIntentFactory {
 		return new Intent(context, RestDelegateService.class);
 	}
 
-	public Intent createIntent(Operation.OperationResponse response) {
+	public Intent createIntent(Operation.OperationResponse response, Bundle extras) {
 		Intent intent = new Intent(Constants.ACTION_REST_RESULT);
 		intent.addCategory(Utils.escapeType(response.getClass()));
+		intent.putExtras(extras);
 		intent.putExtra(Constants.REST_RESPONSE, response);
 		return intent;
 	}
 
-	public Intent createIntent(Throwable e) {
+	public Intent createIntent(Throwable e, Bundle extras) {
 		Intent intent = new Intent(Constants.ACTION_REST_RESULT);
 		intent.addCategory(Utils.escapeType(e.getClass()));
+		intent.putExtras(extras);
 		intent.putExtra(Constants.REST_EXCEPTION, e);
 		return intent;
 	}

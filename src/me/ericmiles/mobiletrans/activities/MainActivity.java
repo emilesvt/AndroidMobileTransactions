@@ -20,6 +20,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * Main activity, allows the user to enter in a username and password as
+ * well as the ability to see what the session id is.
+ * 
+ * @author emiles
+ *
+ */
 public class MainActivity extends Activity {
 
 	private static final String TAG = MainActivity.class.getSimpleName();
@@ -65,6 +72,7 @@ public class MainActivity extends Activity {
 				request.userId = userId.getText().toString();
 				request.password = password.getText().toString();
 
+				// make our network request
 				Intent intent = factory.createIntent(request);
 				startService(intent);
 
@@ -108,6 +116,8 @@ public class MainActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "Received intent " + intent);
 			final LoginOperation.Response response = intent.getParcelableExtra(Constants.REST_RESPONSE);
+			
+			// don't believe I need to do this, but gonna leave it here.
 			runOnUiThread(new Runnable() {
 
 				@Override

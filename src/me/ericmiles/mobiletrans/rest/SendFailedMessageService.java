@@ -9,6 +9,7 @@ import me.ericmiles.mobiletrans.operations.Operation.OperationResponse.Status;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 /**
@@ -47,7 +48,8 @@ public class SendFailedMessageService extends IntentService {
 			response.errorMsg = "Sorry!  Something went terribly wrong";
 
 			// create the response broadcast and send on
-			final Intent forward = OperationIntentFactory.getInstance(getApplicationContext()).createIntent(response);
+			final Intent forward = OperationIntentFactory.getInstance(getApplicationContext()).createIntent(response,
+					new Bundle());
 			sendOrderedBroadcast(forward, Constants.PERMISSION);
 		} catch (Exception e) {
 			Log.e(TAG, "oops", e);

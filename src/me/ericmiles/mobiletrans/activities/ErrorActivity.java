@@ -17,6 +17,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 /**
+ * Generic error activity for our demo
+ * 
  * @author emiles
  * 
  */
@@ -47,17 +49,19 @@ public class ErrorActivity extends Activity {
 
 						// this is a cheat, but trying to show that a subsequent
 						// retry CAN work (i can't do this programmatically in
-						// the backend
-						// with mocky
+						// the backend with mocky
 						if (request instanceof TimeoutOperation.Request) {
 							((TimeoutOperation.Request) request).retry = true;
 						}
 
+						// we're going to attempt to refire the original request
 						startService(intent);
 						finish();
 					}
 				}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
+						// we're just going to kill this error activity and send a failed message to the waiting
+						// activity
 						Intent forward = new Intent(ErrorActivity.this, SendFailedMessageService.class);
 						forward.putExtras(extras);
 						startService(forward);

@@ -21,6 +21,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 /**
+ * simple activity to allow the user to fire another network call,
+ * take a look at the session id, or to signout.
+ * 
  * @author emiles
  * 
  */

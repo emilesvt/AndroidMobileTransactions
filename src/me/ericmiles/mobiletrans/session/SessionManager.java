@@ -9,11 +9,16 @@ import android.text.TextUtils;
 
 
 /**
+ * Simple singleton responsible for managing the session id received from the server.
+ * 
  * @author 94728
  * 
  */
 public class SessionManager {
 
+	/*
+	 * Singleton
+	 */
 	private static SessionManager _instance = null;
 
 	private String sessionId = null;
@@ -41,8 +46,7 @@ public class SessionManager {
 		}
 	}
 
-	// yeah, yeah, i know the double locking mechanism in the singleton might not work all the time
-	// it should here though.
+	// yeah, yeah, i know the double locking mechanism in the singleton might not work all the time...
 	public static final SessionManager getInstance(Context applicationContext) {
 		if (_instance == null) {
 			synchronized (OperationIntentFactory.class) {

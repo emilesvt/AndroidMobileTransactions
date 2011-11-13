@@ -21,6 +21,9 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 /**
+ * Listens to all valid responses and manages the local session id.  we've implemented a short, 1 minute
+ * timeout if no network activity transpires.
+ * 
  * @author 94728
  * 
  */
@@ -48,6 +51,7 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 
 		SessionManager manager = SessionManager.getInstance(context.getApplicationContext());
 
+		// is this a login operation?
 		if (intent.getCategories().contains(Utils.escapeType(LoginOperation.Response.class))) {
 			LoginOperation.Response response = intent.getParcelableExtra(Constants.REST_RESPONSE);
 
@@ -64,7 +68,7 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 			authenticated = false;
 			// let's kill our triggers
 			manager.setSessionId(null);
-			killSessionTriggers(context);
+			killSessionAlarms(context);
 			// let's also notify the user via a status bar notification they've
 			// been logged out
 			notifyOfLogout(context);
@@ -74,10 +78,11 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 		// we're going to assume that this was a valid call and we
 		// want to reset our session timeout triggers
 		if (intent.getParcelableExtra(Constants.REST_RESPONSE) != null && authenticated) {
-			resetSessionTriggers(context);
+			resetSessionAlarms(context);
 		}
 	}
 
+	// send status bar notification
 	private void notifyOfLogout(Context context) {
 		NotificationManager mNotificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -99,12 +104,14 @@ public class SessionManagerBroadcastReceiver extends BroadcastReceiver {
 		mNotificationManager.notify(1, notification);
 	}
 
-	private void killSessionTriggers(Context context) {
+	// kill session alarm
+	private void killSessionAlarms(Context context) {
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManager.cancel(getLogoutIntent(context));
 	}
 
-	private void resetSessionTriggers(Context context) {
+	// reset session alarm
+	private void resetSessionAlarms(Context context) {
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
 		// arbitrarily setting session timeout to 1 mins

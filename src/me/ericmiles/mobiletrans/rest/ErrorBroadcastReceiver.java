@@ -31,10 +31,7 @@ public class ErrorBroadcastReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "Received intent: " + intent);
-		// do some inspection of data connections to see if we have one, that'll
-		// determine
-		// what activity we want to call
-		// for this demo, always call connection timeout
+		// for this demo, always call error activity
 		Intent forward = new Intent(context, ErrorActivity.class);
 		forward.putExtras(intent.getExtras());
 		forward.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

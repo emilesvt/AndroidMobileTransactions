@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="me.ericmiles.mobiletrans.USES_REST" />
 
+    <!-- This permission identification is important, it allows us to broadcast messages -->
+    <!-- That only applications that have been signed by THIS application's certificate -->
+    <!-- Can register to listen for.  Essentially allow application only broadcasts -->
     <permission
         android:name="me.ericmiles.mobiletrans.USES_REST"
         android:protectionLevel="signature" >
@@ -46,6 +49,8 @@
         <service android:name=".rest.SendFailedMessageService" >
         </service>
 
+        <!-- The session manager broadcast receiver is interested in ALL valid network calls (category) -->
+        <!-- Also notice it uses the custom permission -->
         <receiver
             android:name=".session.SessionManagerBroadcastReceiver"
             android:permission="me.ericmiles.mobiletrans.USES_REST" >
@@ -57,6 +62,7 @@
                 <category android:name="me.ericmiles.mobiletrans.operations.TimeoutOperation.Response" />
             </intent-filter>
         </receiver>
+        <!-- Error broadcast receiver is interested in a few exceptions -->
         <receiver
             android:name=".rest.ErrorBroadcastReceiver"
             android:permission="me.ericmiles.mobiletrans.USES_REST" >
