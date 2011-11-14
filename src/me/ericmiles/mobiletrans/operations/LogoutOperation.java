@@ -56,31 +56,8 @@ public interface LogoutOperation extends Operation {
 	}
 
 	public static class Response extends OperationResponse implements Parcelable {
-		public enum Status {
-			SUCCESS, FAILED
-		};
-
-		public Status status;
-
 		public Response(Parcel in) {
 			super(in);
-			status = Status.valueOf(in.readString());
-		}
-
-		@Override
-		public int describeContents() {
-			return 0;
-		}
-
-		@Override
-		public void writeToParcel(Parcel dest, int flags) {
-			super.writeToParcel(dest, flags);
-			dest.writeString(status.name());
-		}
-
-		@Override
-		public String toString() {
-			return "Response [status=" + status + ", toString()=" + super.toString() + "]";
 		}
 
 		public static final Parcelable.Creator<Response> CREATOR = new Parcelable.Creator<Response>() {

@@ -6,7 +6,7 @@ package me.ericmiles.mobiletrans.activities;
 import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.R;
 import me.ericmiles.mobiletrans.operations.LogoutOperation;
-import me.ericmiles.mobiletrans.operations.LogoutOperation.Response.Status;
+import me.ericmiles.mobiletrans.operations.Operation.OperationResponse.Status;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
 import me.ericmiles.mobiletrans.operations.TimeoutOperation;
 import me.ericmiles.mobiletrans.session.SessionManager;
@@ -21,8 +21,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 /**
- * simple activity to allow the user to fire another network call,
- * take a look at the session id, or to signout.
+ * simple activity to allow the user to fire another network call, take a look
+ * at the session id, or to signout.
  * 
  * @author emiles
  * 
