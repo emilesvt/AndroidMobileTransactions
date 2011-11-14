@@ -9,7 +9,6 @@ import me.ericmiles.mobiletrans.Constants;
 import me.ericmiles.mobiletrans.operations.Operation;
 import me.ericmiles.mobiletrans.operations.OperationIntentFactory;
 import me.ericmiles.mobiletrans.operations.UrlFactory;
-import me.ericmiles.mobiletrans.operations.UrlFactoryDevelopment;
 import me.ericmiles.mobiletrans.session.SessionManager;
 
 import org.apache.http.conn.params.ConnManagerParams;
@@ -33,10 +32,7 @@ import org.springframework.web.client.RestTemplate;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 /**
@@ -79,24 +75,7 @@ public class RestDelegateService extends IntentService {
 		// setting read timeout to 5 seconds
 		((HttpComponentsClientHttpRequestFactory) template.getRequestFactory()).setReadTimeout(5 * 1000);
 
-		// you could potentially do a "production" url factory here based off the debuggable flag
-		boolean development = false;
-		try {
-			PackageInfo packageInfo = getApplicationContext().getPackageManager().getPackageInfo(
-					getApplicationContext().getPackageName(), 0);
-			int flags = packageInfo.applicationInfo.flags;
-			if ((flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-				development = true;
-			}
-		} catch (NameNotFoundException e) {
-			Log.e(TAG, "A major error occurred in the app", e);
-		}
-
-		if (development) {
-			urlFactory = new UrlFactoryDevelopment(getApplicationContext());
-		} else {
-			// do something else
-		}
+		urlFactory = new UrlFactory(getApplicationContext());
 	}
 
 	/*
@@ -132,7 +111,7 @@ public class RestDelegateService extends IntentService {
 
 		// make our call
 		try {
-			ResponseEntity r = template.exchange(request.getUrl(urlFactory), request.getHttpMethod(), requestEntity,
+			ResponseEntity r = template.exchange(urlFactory.getUrl(request), request.getHttpMethod(), requestEntity,
 					request.getResponseType());
 			result = factory.createIntent((Operation.OperationResponse) r.getBody(), intent.getExtras());
 			result.putExtra(Constants.HTTP_RESPONSE_CODE, r.getStatusCode().value());
@@ -151,8 +130,10 @@ public class RestDelegateService extends IntentService {
 
 		Log.d(TAG, "Firing result intent " + result.toString());
 
-		// you could even send an Ordered broadcast, but I think the use of a strongly typed
-		// category will alleviate the need to "chain" broadcast receivers like that
+		// you could even send an Ordered broadcast, but I think the use of a
+		// strongly typed
+		// category will alleviate the need to "chain" broadcast receivers like
+		// that
 		sendBroadcast(result, Constants.PERMISSION);
 	}
 

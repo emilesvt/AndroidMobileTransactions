@@ -37,7 +37,7 @@ public interface Operation {
 		 */
 		abstract public HttpMethod getHttpMethod();
 
-		abstract public String getUrl(UrlFactory factory);
+		abstract public int getUrlResourceId();
 
 	}
 

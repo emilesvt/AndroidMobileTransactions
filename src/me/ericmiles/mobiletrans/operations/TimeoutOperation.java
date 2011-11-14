@@ -1,6 +1,8 @@
 package me.ericmiles.mobiletrans.operations;
 
 
+import me.ericmiles.mobiletrans.R;
+
 import org.springframework.http.HttpMethod;
 
 import android.os.Parcel;
@@ -37,8 +39,8 @@ public interface TimeoutOperation extends Operation {
 		}
 
 		@Override
-		public String getUrl(UrlFactory factory) {
-			return factory.getUrl(this);
+		public int getUrlResourceId() {
+			return R.string.url_timeout_operation;
 		}
 
 		@Override
